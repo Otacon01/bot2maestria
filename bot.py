@@ -3,9 +3,8 @@
 from config import bot
 import config
 from time import sleep
-import re
+from telebot import types
 
-#########################################################
 bot_data = {}
 class Record:
     def __init__(self):
@@ -13,12 +12,8 @@ class Record:
         self.weight = None
         self.gender = None
 
-# Enable saving next step handlers to file "./.handlers-saves/step.save".
-# Delay=2 means that after any change in next step handlers (e.g. calling register_next_step_handler()
-# saving will hapen after delay 2 seconds.
+
 bot.enable_save_next_step_handlers(delay=2)
-# Load next_step_handlers from save file (default "./.handlers-saves/step.save")
-# WARNING It will work only if enable_save_next_step_handlers was called!
 bot.load_next_step_handlers()
 
 #########################################################
@@ -26,10 +21,21 @@ bot.load_next_step_handlers()
 def on_command_start(message):
     bot.send_chat_action(message.chat.id, 'typing')
     sleep(1)
-    bot.send_message(
+    m = bot.send_message(
         message.chat.id,
-        "Hola, soy un \U0001F916, ¿cómo estás?",
+        "\U0001F916 Bienvenido al bot del Índice de Masa Corporal",
         parse_mode="Markdown")
+            
+@bot.message_handler(commands=['menu'])
+def on_command_menu(message):
+
+    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    itembtn1 = types.KeyboardButton('/imc')
+    itembtn2 = types.KeyboardButton('/help')
+
+    markup.add(itembtn1, itembtn2)
+    
+    bot.send_message(message.chat.id, "Selecciona una opción del menú:",reply_markup=markup)
 
 @bot.message_handler(func=lambda message: True)
 def on_fallback(message):
